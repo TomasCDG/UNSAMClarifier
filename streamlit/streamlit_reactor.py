@@ -1,6 +1,7 @@
 import pandas as pd
 import streamlit as st
-#import plotly.express as px
+import numpy as np
+import plotly.graph_objects as go
 
 
 st.set_page_config(
@@ -71,6 +72,14 @@ def volume():
     
     return vol
 
+def volumey(selected):
+    return selected * (df['DBO0']-df['DBOf']) * df['Q'] * (ks + df['DBOf']) / (umax * df['DBOf'] * x)
+def volumeumax(selected):
+    return y * (df['DBO0']-df['DBOf']) * df['Q'] * (ks + df['DBOf']) /(selected * df['DBOf'] * x)
+def volumeks(selected):
+    return y * (df['DBO0']-df['DBOf']) * df['Q'] * (selected + df['DBOf']) /(umax * df['DBOf'] * x)
+def volumex(selected):
+    return y * (df['DBO0']-df['DBOf']) * df['Q'] * (ks + df['DBOf']) /(umax * df['DBOf'] * selected)
 
 ############################################################################################################################
 ############################################################################################################################
@@ -163,3 +172,95 @@ if st.button('calculate volume!'):
     vol = volume()
     st.success(f'{round(vol,2)} m3')
 
+for i in range(0,6):
+    st.write('\n')
+
+############################################################################################################################
+############################################################################################################################
+###########################                          Plots!                                         ########################
+
+st.markdown("""\n\n\n # select variables  to plot and check volume!""")
+
+
+
+third = st.radio('Please select your variable.',
+                    ('Y', 'umax', 'ks', 'X'))
+variables = { 'flowrate': Q , 'DBO': initial_dbo, 'DBOfinal': final_dbo, 'Y': y,  
+            'umax': umax, 'ks': ks, 'X' : x  }
+
+
+Qrange= np.linspace(Q*0.5,Q*1.5,20) 
+dborange= np.linspace(initial_dbo*0.5,initial_dbo*1.5,20)
+dbofrange = np.linspace(final_dbo*0.5,final_dbo*1.5,20)
+
+selected = variables[third]
+selected = np.linspace(selected*0.5,selected*1.5,5)  
+
+
+df= pd.DataFrame(data = [Qrange,dborange,dbofrange])
+df = df.transpose()
+df.columns = ['Q','DBO0','DBOf']
+
+
+if third == 'Y':
+    for i in range(len(selected)):
+        df['vol' + f'({third}' + f'={round(selected[i],3)})'] = volumey(selected[i])
+    x=df['Q']
+    y=df['DBO0']
+    fig=go.Figure()
+    for i in range(len(selected)):
+        fig.add_trace(go.Scatter3d(x=x,y=y,z=df['vol' + f'({third}' + f'={round(selected[i],3)})'],
+                        mode='lines+markers',
+                        name='vol' + f'({third}' + f'={round(selected[i],3)})'))
+
+    camera = dict(up=dict(x=0, y=0, z=1), center=dict(x=0, y=0, z=0), eye=dict(x=2.25, y=1.25, z=0.5))
+    st.plotly_chart(fig.update_layout(scene_camera=camera, width=800, height=700, autosize = False, title = 'hover over me!'))
+    st.write(df.head())
+
+if third == 'umax':
+    for i in range(len(selected)):
+        df['vol' + f'({third}' + f'={round(selected[i],3)})'] = volumeumax(selected[i])
+    x=df['Q']
+    y=df['DBO0']
+    fig=go.Figure()
+    for i in range(len(selected)):
+        fig.add_trace(go.Scatter3d(x=x,y=y,z=df['vol' + f'({third}' + f'={round(selected[i],3)})'],
+                        mode='lines+markers',
+                        name='vol' + f'({third}' + f'={round(selected[i],3)})'))
+    
+    camera = dict(up=dict(x=0, y=0, z=1), center=dict(x=0, y=0, z=0), eye=dict(x=2.25, y=1.25, z=0.5))
+    st.plotly_chart(fig.update_layout(scene_camera=camera, width=800, height=700, autosize = False, title = 'hover over me!'))
+    st.write(df.head())
+
+if third == 'ks':
+    for i in range(len(selected)):
+        df['vol' + f'({third}' + f'={round(selected[i],3)})'] = volumeks(selected[i])
+    x=df['Q']
+    y=df['DBO0']
+    fig=go.Figure()
+    for i in range(len(selected)):
+        fig.add_trace(go.Scatter3d(x=x,y=y,z=df['vol' + f'({third}' + f'={round(selected[i],3)})'],
+                        mode='lines+markers',
+                        name='vol' + f'({third}' + f'={round(selected[i],3)})'))
+    
+    camera = dict(up=dict(x=0, y=0, z=1), center=dict(x=0, y=0, z=0), eye=dict(x=2.25, y=1.25, z=0.5))
+    st.plotly_chart(fig.update_layout(scene_camera=camera, width=800, height=700, autosize = False, title = 'hover over me!'))
+    st.write(df.head())
+
+if third == 'X':
+
+    for i in range(len(selected)):
+        df['vol' + f'({third}' + f'={round(selected[i],3)})'] = volumex(selected[i])
+
+    x=df['Q']
+    y=df['DBO0']
+    fig=go.Figure()
+    for i in range(len(selected)):
+        fig.add_trace(go.Scatter3d(x=x,y=y,z=df['vol' + f'({third}' + f'={round(selected[i],3)})'],
+                        mode='lines+markers',
+                        name='vol' + f'({third}' + f'={round(selected[i],3)})'))
+    
+    
+    camera = dict(up=dict(x=0, y=0, z=1), center=dict(x=0, y=0, z=0), eye=dict(x=2.25, y=1.25, z=0.5))
+    st.plotly_chart(fig.update_layout(scene_camera=camera, width=800, height=700, autosize = False, title = 'hover over me!'))
+    st.write(df.head())
