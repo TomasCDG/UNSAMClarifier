@@ -214,7 +214,7 @@ if third == 'Y':
                         name='vol' + f'({third}' + f'={round(selected[i],3)})'))
 
     camera = dict(up=dict(x=0, y=0, z=1), center=dict(x=0, y=0, z=0), eye=dict(x=2.25, y=1.25, z=0.5))
-    st.plotly_chart(fig.update_layout(scene_camera=camera, width=800, height=700, autosize = False, title = 'hover over me!'))
+    st.plotly_chart(fig.update_layout(scene_camera=camera, width=800, height=700, autosize = True, title = 'hover over me!'))
     st.write(df.head())
 
 if third == 'umax':
@@ -229,7 +229,7 @@ if third == 'umax':
                         name='vol' + f'({third}' + f'={round(selected[i],3)})'))
     
     camera = dict(up=dict(x=0, y=0, z=1), center=dict(x=0, y=0, z=0), eye=dict(x=2.25, y=1.25, z=0.5))
-    st.plotly_chart(fig.update_layout(scene_camera=camera, width=800, height=700, autosize = False, title = 'hover over me!'))
+    st.plotly_chart(fig.update_layout(scene_camera=camera, width=800, height=700, autosize = True, title = 'hover over me!'))
     st.write(df.head())
 
 if third == 'ks':
@@ -244,7 +244,7 @@ if third == 'ks':
                         name='vol' + f'({third}' + f'={round(selected[i],3)})'))
     
     camera = dict(up=dict(x=0, y=0, z=1), center=dict(x=0, y=0, z=0), eye=dict(x=2.25, y=1.25, z=0.5))
-    st.plotly_chart(fig.update_layout(scene_camera=camera, width=800, height=700, autosize = False, title = 'hover over me!'))
+    st.plotly_chart(fig.update_layout(scene_camera=camera, width=800, height=700, autosize = True, title = 'hover over me!'))
     st.write(df.head())
 
 if third == 'X':
@@ -262,5 +262,5 @@ if third == 'X':
     
     
     camera = dict(up=dict(x=0, y=0, z=1), center=dict(x=0, y=0, z=0), eye=dict(x=2.25, y=1.25, z=0.5))
-    st.plotly_chart(fig.update_layout(scene_camera=camera, width=800, height=700, autosize = False, title = 'hover over me!'))
+    st.plotly_chart(fig.update_layout(scene_camera=camera, width=800, height=700, autosize = True, title = 'hover over me!'))
     st.write(df.head())
