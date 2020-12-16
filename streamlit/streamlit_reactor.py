@@ -201,22 +201,25 @@ df= pd.DataFrame(data = [Qrange,dborange,dbofrange])
 df = df.transpose()
 df.columns = ['Q','DBO0','DBOf']
 
+st.write(f'X is the ***flowrate***, y is the ***initial DBO***\n and z is the resulting ***volume***')
 
 if third == 'Y':
     for i in range(len(selected)):
         df['vol' + f'({third}' + f'={round(selected[i],3)})'] = volumey(selected[i])
     x=df['Q']
     y=df['DBO0']
+
     fig=go.Figure()
     for i in range(len(selected)):
         fig.add_trace(go.Scatter3d(x=x,y=y,z=df['vol' + f'({third}' + f'={round(selected[i],3)})'],
                         mode='lines+markers',
-                        name='vol' + f'({third}' + f'={round(selected[i],3)})'))
+                        name='vol' + f'({third}' + f'={round(selected[i],3)})'), )
 
     camera = dict(up=dict(x=0, y=0, z=1), center=dict(x=0, y=0, z=0), eye=dict(x=2.25, y=1.25, z=0.5))
+
     st.plotly_chart(fig.update_layout(scene_camera=camera, 
         #width=800, height=700, 
-        autosize = True, title = 'hover over me!'))
+        autosize = True, title = 'hover over me!'),)
     st.write(df.head())
 
 if third == 'umax':
@@ -272,3 +275,4 @@ if third == 'X':
         #width=800, height=700, 
         autosize = True, title = 'hover over me!'))
     st.write(df.head())
+
