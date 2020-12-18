@@ -136,7 +136,7 @@ def theta():
 def u():
 	u = (final_dbo*k)/(ks+final_dbo)
 	if u < 0.2 or u > 0.6:
-		print(f"**RATE OF SUBSTRATE UTILIZATION: {round(u,2)}.** *Should be between 0.2 and 0.6 kgDBO5/kgSSVLMd*")
+		st.warning(f"**RATE OF SUBSTRATE UTILIZATION: {round(u,2)}.** *Should be between 0.2 and 0.6 kgDBO5/kgSSVLMd*")
 	else:
 		st.success(f"**RATE OF SUBSTRATE UTILIZATIONv: {round(u,2)}.** *Should be between 0.2 and 0.6 kgDBO5/kgSSVLMd*")
 
