@@ -74,6 +74,7 @@ def volume():
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 def volumey(selected):
     return selected * (df['DBO0']-df['DBOf']) * df['Q'] * (ks + df['DBOf']) / (umax * df['DBOf'] * x)
 def volumeumax(selected):
@@ -83,6 +84,8 @@ def volumeks(selected):
 def volumex(selected):
     return y * (df['DBO0']-df['DBOf']) * df['Q'] * (ks + df['DBOf']) /(umax * df['DBOf'] * selected)
 =======
+=======
+>>>>>>> refs/remotes/origin/test
 =======
 >>>>>>> refs/remotes/origin/test
 ####### FLOW FUNCTIONS
@@ -183,7 +186,10 @@ def pxss():
 	pxss = px()/sssvsstratio()
 	return pxss
 <<<<<<< HEAD
+<<<<<<< HEAD
 >>>>>>> 9edd4048c1a2c8433eaa0ecca2ea1f6ed2aaf9ce
+=======
+>>>>>>> refs/remotes/origin/test
 =======
 >>>>>>> refs/remotes/origin/test
 
@@ -307,6 +313,7 @@ u()
 
 	#SLUDGE
 <<<<<<< HEAD
+<<<<<<< HEAD
 
 <<<<<<< HEAD
 for i in range(0,6):
@@ -416,6 +423,10 @@ if third == 'X':
 =======
 st.success(f'**TOTAL SLUDGE: {round(pxss(),2)} kg/d **')
 >>>>>>> 9edd4048c1a2c8433eaa0ecca2ea1f6ed2aaf9ce
+=======
+
+st.success(f'**TOTAL SLUDGE: {round(pxss(),2)} kg/d **')
+>>>>>>> refs/remotes/origin/test
 =======
 
 st.success(f'**TOTAL SLUDGE: {round(pxss(),2)} kg/d **')
