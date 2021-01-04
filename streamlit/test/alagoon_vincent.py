@@ -3,13 +3,14 @@ import streamlit as st
 #import plotly.express as px
 from alagoon import ALagoon
 
-class ALagoon_tr(ALagoon):
+class ALagoon_vincent(ALagoon):
 
 ########################################################################## INITIALIZER ############################################
 	
 	def __init__(self,starting_dbo,Q):
 		super().__init__(starting_dbo,Q)
-		self.name = "Anaerobic Lagoon - TR"
+		self.name = "Anaerobic Lagoon - Vincent"
+		
 		############## NOT INITIALIZED VARIABLES
 
 		#self._t

@@ -1,19 +1,17 @@
 import pandas as pd
 import streamlit as st
+from unit_body import Unit_body
 #import plotly.express as px
 
 ####### MAIN CLASS
 
-class Reactor():
+class Reactor(Unit_body):
 
 ############################################################# INITIALIZER ########################################
 	
-	def __init__(self,starting_dbo,final_dbo,Q):
+	def __init__(self,starting_dbo,Q):
+		super().__init__(starting_dbo,Q)
 		self.name = 'Reactor'
-		self._dbo0 = starting_dbo
-		self._dbof = final_dbo
-		self._flow = Q
-
 		############## NOT INITIALIZED VARIABLES
 
 		#self._watertype
@@ -25,9 +23,10 @@ class Reactor():
 		#self._xp
 		#self._k
 		#self._sssvsstratio
+		#self._dbof
 
 		############### BIBLIOGRAPHY
-
+	def _initBiblio(self):
 		self._lista= {'Y' : [0.4,0.8,0.6,'mgSSV/mgDBO5'],
 		'ks' : [25,100,60,'mgDBO5/L'],
 		'umax' : ['not available', 'not available', 0.5, '1/d'],
@@ -46,6 +45,11 @@ class Reactor():
 
 	def eff(self):
 		return ((self._dbo0 -self._dbof)/self._dbo0)
+
+	def _dbofvars(self):
+		dbof = st.number_input('Enter please your final DBO',value=30)
+		st.write(f"{dbof} mgDBO5/l")
+		self._dbof = dbof
 
 	################################ WATERTYPE
 
@@ -215,7 +219,9 @@ class Reactor():
 
 	def calculate(self, biblio):
 		st.markdown("### Please input your design variables:")
+		
 		self._wvars()
+		self._dbofvars()
 		self._yvars(biblio)
 		self._ksvars(biblio)
 		self._umaxvars(biblio)
@@ -250,12 +256,4 @@ class Reactor():
 		st.success(f'**TOTAL SLUDGE: {round(self.pxss(),2)} kg/d **')
 
 		st.markdown("### ----------------------------------------------------------------")
-
-	#################################### EXECUTE UNIT
-
-	def execute(self,biblio):
-		self.calculate(biblio)
-		self.validate()
-		self.results()
-		self.warnings()
 

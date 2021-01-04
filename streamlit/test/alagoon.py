@@ -1,16 +1,15 @@
 import pandas as pd
 import streamlit as st
+from unit_body import Unit_body
 #import plotly.express as px
 
-class ALagoon():
+class ALagoon(Unit_body):
 
 ########################################################################## INITIALIZER ############################################
 	
 	def __init__(self,starting_dbo,Q):
+		super().__init__(starting_dbo,Q)
 		self.name = "Anaerobic Lagoon"
-		self._dbo0 = starting_dbo
-		self._flow = Q
-		self._initBiblio()
 		############## NOT INITIALIZED VARIABLES
 
 		#self._t
@@ -96,7 +95,7 @@ class ALagoon():
 		if self._t < 11 or self._t > 30:
 			st.warning("All the trails where made within 10 and 30 °C, and the application of the model is not recommended for temperatures outside that range.")
 
-	############## CALCULATE
+	######################################### CALCULATE
 
 	def calculate(self, biblio):
 		self._tvars(biblio)
@@ -111,7 +110,7 @@ class ALagoon():
 
 		st.markdown("### ----------------------------------------------------------------")
 
-	#################################### SHOW RESULTS
+	######################################## SHOW RESULTS
 
 	def results(self):
 		st.markdown("### Results")
@@ -124,7 +123,7 @@ class ALagoon():
 
 		st.markdown("### ----------------------------------------------------------------")
 
-	############## EXECUTE
+	######################################### EXECUTE
 
 	def execute(self,biblio):
 		self.calculate(biblio)
