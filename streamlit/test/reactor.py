@@ -1,40 +1,33 @@
 import pandas as pd
 import streamlit as st
+from unit_body import Unit_body
 #import plotly.express as px
-
-#st.set_page_config(
-           # page_title="Reactor", # => Quick reference - Streamlit
-            #page_icon=":droplet:",
-            ##layout="centered", # wide
-            #initial_sidebar_state="auto") # collapsed
 
 ####### MAIN CLASS
 
-class Reactor():
+class Reactor(Unit_body):
 
-###### INITIALIZER
+############################################################# INITIALIZER ########################################
+	
+	def __init__(self,starting_dbo,Q):
+		super().__init__(starting_dbo,Q)
+		self.name = 'Reactor'
+		############## NOT INITIALIZED VARIABLES
 
-	def __init__(self,starting_dbo,final_dbo,Q):
-		self.dbo0 = starting_dbo
-		self.dbof = final_dbo
-		self.flow = Q
-		self.eff = ((starting_dbo-final_dbo)/starting_dbo)
+		#self._watertype
+		#self._y
+		#self._ks
+		#self._umax
+		#self._x
+		#self._kd
+		#self._xp
+		#self._k
+		#self._sssvsstratio
+		#self._dbof
 
-		##### not initialized variables
-
-		#self.watertype
-		#self.y
-		#self.ks
-		#self.umax
-		#self.x
-		#self.kd
-		#self.xp
-		#self.k
-		#self.sssvsstratio
-
-		##### bibliografia
-
-		self.lista= {'Y' : [0.4,0.8,0.6,'mgSSV/mgDBO5'],
+		############### BIBLIOGRAPHY
+	def _initBiblio(self):
+		self._lista= {'Y' : [0.4,0.8,0.6,'mgSSV/mgDBO5'],
 		'ks' : [25,100,60,'mgDBO5/L'],
 		'umax' : ['not available', 'not available', 0.5, '1/d'],
 		'X' : ['not available', 'not available', 3000, 'mgSSV/L'],
@@ -42,325 +35,225 @@ class Reactor():
 		'xp' : ['not available yet','not available yet',8000,'mgSSV/L'],
 		'k' : [2,10,5,'1/d']
 		}
-		self.commonvals = pd.DataFrame(self.lista,)
-		self.commonvals = self.commonvals.transpose()
-		self.commonvals.columns = ['lower limit','higher limit','typical','unit']
+		self._commonvals = pd.DataFrame(self._lista,)
+		self._commonvals = self._commonvals.transpose()
+		self._commonvals.columns = ['lower limit','higher limit','typical','unit']
 
-###### GETTERS
+	################################################################### METHODS ##################################
 
-	def get_dbo0(self):
-		return self._dbo0
+	################################## EFFICIENCY
 
-	def get_dbof(self):
-		return self._dbof
+	def eff(self):
+		return ((self._dbo0 -self._dbof)/self._dbo0)
 
-	def get_flow(self):
-		return self._flow
+	def _dbofvars(self):
+		dbof = st.number_input('Enter please your final DBO',value=30)
+		st.write(f"{dbof} mgDBO5/l")
+		self._dbof = dbof
 
-	def get_eff(self):
-		return self._eff
+	################################ WATERTYPE
 
-	def get_watertype(self):
-		return self._watertype
-
-	def get_y(self):
-		return self._y
-
-	def get_ks(self):
-		return self._ks
-
-	def get_umax(self):
-		return self._umax
-
-	def get_x(self):
-		return self._x
-
-	def get_kd(self):
-		return self._kd
-
-	def get_xp(self):
-		return self._xp
-
-	def get_k(self):
-		return self._k
-
-	def get_sssvsstratio(self):
-		return self._sssvsstratio
-
-####### SETTERS
-	
-	def set_dbo0(self, var):
-		self._dbo0 = var
-
-	def set_dbof(self, var):
-		self._dbof = var
-
-	def set_flow(self, var):
-		self._flow = var
-
-	def set_eff(self, var):
-		self._eff = var
-
-	def set_watertype(self, var):
+	def _wvars(self):
+		var = st.selectbox("Enter please your watertype", ('Sewage','Industrial'))
 		self._watertype = var
+		
+	############################### VOLUME
 
-	def set_y(self, var):
-		self._y = var
-
-	def set_ks(self, var):
-		self._ks = var
-
-	def set_umax(self, var):
-		self._umax = var
-
-	def set_x(self, var):
-		self._x = var
-
-	def set_kd(self, var):
-		self._kd = var
-
-	def set_xp(self, var):
-		self._xp = var
-
-	def set_k(self, var):
-		self._k = var
-
-	def set_sssvsstratio(self, var):
-		self._sssvsstratio = var
-
-	##### PROPERTIES
-
-	dbo0 = property(get_dbo0, set_dbo0)
-	dbof = property(get_dbof, set_dbof)
-	flow = property(get_flow, set_flow)
-	eff = property(get_eff, set_eff)
-	watertype = property(get_watertype, set_watertype)
-	y = property(get_y, set_y)
-	ks = property(get_ks, set_ks)
-	umax = property(get_umax, set_umax)
-	x = property(get_x, set_x)
-	kd = property(get_kd, set_kd)
-	xp = property(get_xp, set_xp)
-	k = property(get_k, set_k)
-	sssvsstratio = property(get_sssvsstratio, set_sssvsstratio)
-
-	##### METHODS
-
-	############# VOLUME
-
-	def setvolvars(self, biblio):
-		self.yvars(biblio)
-		self.ksvars(biblio)
-		self.umaxvars(biblio)
-		self.xvars(biblio)
-
-	def yvars(self, biblio):
+	def _yvars(self, biblio):
 		y= st.number_input('Enter please your Y (relación masa celular formada/sustrato consumido)', value= 0.6)
 		if biblio == 'yes':
-			st.write(self.commonvals.loc['Y',:])     
+			st.write(self._commonvals.loc['Y',:])     
 		st.write(f"{y} mgSSV/mgDBO5")   
-		self.set_y(y)
+		self._y = y
 
-	def ksvars(self, biblio):
+	def _ksvars(self, biblio):
 		ks= st.number_input('Enter please your ks (constante de sustrato)', value= 60.0)
 		if biblio == 'yes':
-			st.write(self.commonvals.loc['ks',:])     
+			st.write(self._commonvals.loc['ks',:])     
 		st.write(f"{ks} mgDBO5/L")   
-		self.set_ks(ks)
+		self._ks = ks
 
-	def umaxvars(self, biblio):
+	def _umaxvars(self, biblio):
 		umax= st.number_input('Enter please your umax (tasa de crecimiento específico máximo)', value= 0.5)
 		if biblio == 'yes':
-			st.write(self.commonvals.loc['umax',:])     
+			st.write(self._commonvals.loc['umax',:])     
 		st.write(f"{umax} 1/d")   
-		self.set_umax(umax)
+		self._umax = umax
 
-	def xvars(self, biblio):
+	def _xvars(self, biblio):
 		x= st.number_input('Enter please your X (biomasa en el reactor)', value = 3000.0)
 		if biblio == 'yes':
-			st.write(self.commonvals.loc['X',:])     
+			st.write(self._commonvals.loc['X',:])     
 		st.write(f"{x} mgSSV/L")   
-		self.set_x(x)
+		self._x = x
 
 	def volume(self):
-		upper = self.get_y() * (self.get_dbo0()-self.get_dbof()) * self.get_flow() * (self.get_ks() + self.get_dbof())
-		lower = self.get_umax() * self.get_dbof() * self.get_x()
+		upper = self._y * (self._dbo0-self._dbof) * self._flow * (self._ks + self._dbof)
+		lower = self._umax * self._dbof * self._x
 		vol = upper/lower
-		if vol <= 100:
-			st.warning('You may have to consider a radial shape for your reactor, since your volume is smaller than 100 cubic meters')
 		return vol
 
-	########### FLOW METHODS
+	#################################### FLOW
 
-	def kdvars(self, biblio):
+	def _kdvars(self, biblio):
 		kd= st.number_input('Enter please your kd (constante de decaimiento)', value = 0.06)
 		if biblio == 'yes':
-			st.write(self.commonvals.loc['kd',:])     
+			st.write(self._commonvals.loc['kd',:])     
 		st.write(f"{kd} 1/d")   
-		self.set_kd(kd)
+		self._kd = kd
 
-	def xpvars(self, biblio):
+	def _xpvars(self, biblio):
 		xp= st.number_input('Enter please your Xp (concentración de purga)', value = 8000)
 		if biblio == 'yes':
-			st.write(self.commonvals.loc['xp',:])     
+			st.write(self._commonvals.loc['xp',:])     
 		st.write(f"{xp} mgSSV/L")   
-		self.set_xp(xp)
+		self._xp = xp
 
-	def kvars(self, biblio):
+	def _kvars(self, biblio):
 		k= st.number_input('Enter please your k (tasa máxima de utilización de sustrato por unidad de masa de microorganismos)', value = 5)
 		if biblio == 'yes':
-			st.write(self.commonvals.loc['k',:])     
+			st.write(self._commonvals.loc['k',:])     
 		st.write(f"{k} 1/d")   
-		self.set_k(k)
+		self._k = k
 
 	def qp(self):
-		return (((self.get_umax()*self.get_x()*self.get_dbof())/(self.get_dbof()+self.get_ks()))-(self.get_x()*self.get_kd()))*(self.volume()/self.get_xp())
+		return (((self._umax*self._x*self._dbof)/(self._dbof+self._ks))-(self._x*self._kd))*(self.volume()/self._xp)
 
 	def qr(self):
-		return ((self.get_flow()*self.get_x()-self.qp()*self.get_xp())/(self.get_xp()-self.get_x()))
+		return ((self._flow*self._x-self.qp()*self._xp)/(self._xp-self._x))
 
-	###### VALIDATIONS
+	######################################### SLUDGE PURGE
 
-	def tr(self):
-		return self.volume()/self.get_flow()
+	############### RATIO BETWEEN SSSV AND SST
 
-	def fm(self):
-		return (self.get_flow()*self.get_dbo0())/(self.volume()*self.get_x())
-
-	def cv(self):
-		return (self.get_flow()*self.get_dbof()*0.0013)/self.volume()
-
-	def theta(self):
-		return (self.volume()*self.get_x())/(self.qp()*self.get_xp())
-
-	def u(self):
-		return (self.get_dbof()*self.get_k())/(self.get_ks()+self.get_dbof())
-
-
-	def validate(self):
-		self.tr_val()
-		self.fm_val()
-		self.cv_val()
-		self.theta_val()
-		self.u_val()
-
-	def tr_val(self):
-		if self.tr() < 0.125 or self.tr() > 0.2083:
-			st.warning(f"**HYDRAULIC RESIDENCE TIME: {round(self.tr(),2)}.** *Should be between 0.125 and 0.2083 days (3 and 5 hours)*")
-		else:
-			st.success(f"**HYDRAULIC RESIDENCE TIME: {round(self.tr(),2)}.** *Should be between 0.125 and 0.2083 days (3 and 5 hours)*")
-
-	def fm_val(self):
-		if self.fm() < 0.2 or self.fm() > 0.6:
-			st.warning(f"**MICROORGANISM - FOOD RELATION: {round(self.fm(),2)}.** *Should be between 0.2 and 0.6 1/d*")
-		else:
-			st.success(f"**MICROORGANISM - FOOD RELATION: {round(self.fm(),2)}.** *Should be between 0.2 and 0.6 1/d*")
-
-	def cv_val(self):
-		if self.cv() < 0.8 or self.cv() > 1.92:
-			st.warning(f"**VOLUMETRIC LOAD: {round(self.cv(),2)}.** *Should be between 0.8 and 1.92 kgDBO5/m3*")
-		else:
-			st.success(f"**VOLUMETRIC LOAD: {round(self.cv(),2)}.** *Should be between 0.8 and 1.92 kgDBO5/m3*")
-		return self.cv()
-
-	def theta_val(self):
-		if self.theta() < 5 or self.theta() > 15:
-			st.warning(f"**CELULAR RESIDENCE TIME: {round(self.theta(),2)}.** *Should be between 5 and 15 days*")
-		else:
-			st.success(f"**CELULAR RESIDENCE TIME: {round(self.theta(),2)}.** *Should be between 5 and 15 days*")
-
-	def u_val(self):
-		if self.u() < 0.2 or self.u() > 0.6:
-			st.warning(f"**RATE OF SUBSTRATE UTILIZATION: {round(self.u(),2)}.** *Should be between 0.2 and 0.6 kgDBO5/kgSSVLMd*")
-		else:
-			st.success(f"**RATE OF SUBSTRATE UTILIZATIONv: {round(self.u(),2)}.** *Should be between 0.2 and 0.6 kgDBO5/kgSSVLMd*")
-
-######### SLUDGE PURGE
-
-###### RATIO BETWEEN SSSV AND SST
-
-	def sssvsstratio(self):
-	    sssvsstratio = st.number_input('Enter please your sssv/sst ratio (relación entre sssv y sst)', value= 0.8)
-	    #if bibliography == 'yes':
-	        #st.write(commonvals.loc['umax',:])     
+	def _sssvsstratio(self):
+	    sssvsstratio = st.number_input('Enter please your sssv/sst ratio (relación entre sssv y sst)', value= 0.8) 
 	    st.write(f"{sssvsstratio}")   
-	    self.set_sssvsstratio(sssvsstratio)
+	    self._sssvsstratio = sssvsstratio
 
-	###### CALCULATE OBSERVED "Y"
+	########### CALCULATE OBSERVED "Y"
 
-	def yobs(self):
-		yobs = self.get_y()/(1+self.get_kd()+self.theta())
+	def _yobs(self):
+		yobs = self._y/(1+self._kd+self._theta())
 		return yobs
 
-	###### CALCULATE VOLATILE ACTIVATED SLUDGE MASS
+	########## CALCULATE VOLATILE ACTIVATED SLUDGE MASS
 
-	def px(self):
-		px = self.yobs()*self.get_flow()*(self.get_dbo0()-self.get_dbof())/1000
+	def _px(self):
+		px = self._yobs()*self._flow*(self._dbo0-self._dbof)/1000
 		return px
 
-	###### CALCULATE TOTAL SLUDGE MASS, BASED ON TOTAL SUSPENDED SOLIDS
+	########## CALCULATE TOTAL SLUDGE MASS, BASED ON TOTAL SUSPENDED SOLIDS
 
 	def pxss(self):
-		pxss = self.px()/self.get_sssvsstratio()
+		pxss = self._px()/self._sssvsstratio
 		return pxss
 
-############################################################################################################################
-############################################################################################################################
-###########################                          FUNCTIONS                                      ########################
 
-#def biblio():
-	#if reactor.get_watertype() == 'Sewage':
-		#bibliography = st.radio("Would you like to see the typical design values and ranges for typical sewage wastewater from now on?",
-			#('yes','no'), index = 1)   
+	############################################# VALIDATIONS
 
-	#elif reactor.get_watertype() == 'Industrial':
-		#bibliography = st.radio("Would you like to see some typical industrial values from bibliography?", ('yes','no'), index = 1)
+	def _tr(self):
+		return self.volume()/self._flow
 
-	#return bibliography
+	def _fm(self):
+		return (self._flow*self._dbo0)/(self.volume()*self._x)
 
-############################################################################################################################
-############################################################################################################################
-############################################PANDAS PRE-LOADING
+	def _cv(self):
+		return (self._flow*self._dbof*0.0013)/self.volume()
 
-#lista= {'Y' : [0.4,0.8,0.6,'mgSSV/mgDBO5'],
-       # 'ks' : [25,100,60,'mgDBO5/L'],
-        #'umax' : ['not available', 'not available', 0.5, '1/d'],
-       # 'X' : ['not available', 'not available', 3000, 'mgSSV/L'],
-       # 'kd' : [0.04,0.075,0.06,'1/d'],
-       # 'xp' : ['not available yet','not available yet',8000,'mgSSV/L'],
-       # 'k' : [2,10,5,'1/d']
-       #}
-#commonvals = pd.DataFrame(lista,)
-#commonvals = commonvals.transpose()
-#commonvals.columns = ['lower limit','higher limit','typical','unit']
+	def _theta(self):
+		return (self.volume()*self._x)/(self.qp()*self._xp)
 
-############################################################################################################################
-############################################################################################################################
-###########################                          SIDEBAR                                        ########################
-    
+	def _u(self):
+		return (self._dbof*self._k)/(self._ks+self._dbof)
 
-#st.sidebar.markdown(f"""
-   # # INITIAL VARIABLES
-    #""")
+	def _tr_val(self):
+		if self._tr() < 0.125 or self._tr() > 0.2083:
+			st.warning(f"**HYDRAULIC RESIDENCE TIME: {round(self._tr(),2)}.** *Should be between 0.125 and 0.2083 days (3 and 5 hours)*")
+		else:
+			st.success(f"**HYDRAULIC RESIDENCE TIME: {round(self._tr(),2)}.** *Should be between 0.125 and 0.2083 days (3 and 5 hours)*")
 
-########### INPUT VALUES
-#st.sidebar.markdown('### Flowrate:')
-#Qinput = st.sidebar.number_input('Insert your initial flowrate *(m3/d)*', value = 300.0*24, step = 10.0)
-#Q_max = Qinput * 2
-#Q = st.sidebar.slider('or fine-tune it:', 0.0, max_value = Q_max, value=  Qinput, key = '1')
+	def _fm_val(self):
+		if self._fm() < 0.2 or self._fm() > 0.6:
+			st.warning(f"**MICROORGANISM - FOOD RELATION: {round(self._fm(),2)}.** *Should be between 0.2 and 0.6 1/d*")
+		else:
+			st.success(f"**MICROORGANISM - FOOD RELATION: {round(self._fm(),2)}.** *Should be between 0.2 and 0.6 1/d*")
 
-#st.sidebar.markdown('### initial DBO5:')
-#initial_dbo_input = st.sidebar.number_input('Insert your initial DBO5 *(mgDBO5/L)*', value = 300.0, step = 10.0)
-#dbo_max = initial_dbo_input * 2
-#initial_dbo = st.sidebar.slider('or fine-tune it:', 0.0, max_value = dbo_max, value = initial_dbo_input, key = '2')
+	def _cv_val(self):
+		if self._cv() < 0.8 or self._cv() > 1.92:
+			st.warning(f"**VOLUMETRIC LOAD: {round(self._cv(),2)}.** *Should be between 0.8 and 1.92 kgDBO5/m3*")
+		else:
+			st.success(f"**VOLUMETRIC LOAD: {round(self._cv(),2)}.** *Should be between 0.8 and 1.92 kgDBO5/m3*")
 
-#st.sidebar.markdown('### final DBO5:')
-#final_dbo_input = st.sidebar.number_input('Insert your final DBO5 *(mgDBO5/L)*', min_value = 0.01, value = 30.0, step = 10.0)
-#final_dbo_max = final_dbo_input * 2 
-#final_dbo = st.sidebar.slider('or fine-tune it:', 0.01, max_value = final_dbo_max, value = final_dbo_input, key = '3')
+	def _theta_val(self):
+		if self._theta() < 5 or self._theta() > 15:
+			st.warning(f"**CELULAR RESIDENCE TIME: {round(self._theta(),2)}.** *Should be between 5 and 15 days*")
+		else:
+			st.success(f"**CELULAR RESIDENCE TIME: {round(self._theta(),2)}.** *Should be between 5 and 15 days*")
 
-############################################################################################################################
-############################################################################################################################
-###########################                          BODY OF PAGE                                   ########################
+	def _u_val(self):
+		if self._u() < 0.2 or self._u() > 0.6:
+			st.warning(f"**RATE OF SUBSTRATE UTILIZATION: {round(self._u(),2)}.** *Should be between 0.2 and 0.6 kgDBO5/kgSSVLMd*")
+		else:
+			st.success(f"**RATE OF SUBSTRATE UTILIZATION: {round(self._u(),2)}.** *Should be between 0.2 and 0.6 kgDBO5/kgSSVLMd*")
 
+##################################################################### CORE #################################################
+
+########################################## WARNINGS
+
+	def warnings(self):
+		st.markdown("### Warnings")
+		self._wvolumen()
+		self._weff()
+
+	def _wvolumen(self):
+		if self.volume() <= 100:
+			st.warning('You may have to consider a radial shape for your reactor, since your volume is smaller than 100 cubic meters')
+
+	def _weff(self):
+		if self.eff() < 1 and self.eff() > 0 :
+			if self.eff() > 0.98:
+				st.warning(f"""Your efficiency of {round(self.eff(),2)*100} is maybe too optimist. \nPlease consider designing a train of reactors or improving the preceding treatment.""")
+
+	###################################### CALCULATE
+
+	def calculate(self, biblio):
+		st.markdown("### Please input your design variables:")
+		
+		self._wvars()
+		self._dbofvars()
+		self._yvars(biblio)
+		self._ksvars(biblio)
+		self._umaxvars(biblio)
+		self._xvars(biblio)
+		self._kdvars(biblio)
+		self._xpvars(biblio)
+		self._kvars(biblio)
+		self._sssvsstratio()
+
+	#################################### VALIDATION
+
+	def validate(self):
+		st.markdown("### Validations")
+
+		self._tr_val()
+		self._fm_val()
+		self._cv_val()
+		self._theta_val()
+		self._u_val()
+
+		st.markdown("### ----------------------------------------------------------------")
+
+	#################################### SHOW RESULTS
+
+	def results(self):
+		st.markdown("### Results")
+
+		st.success(f'**EFFICIENCY: {round(self.eff(),2)*100}%**')
+		st.success(f'**VOLUME: {round(self.volume(),2)} m3**')
+		st.success(f'**PURGE FLOW: {round(self.qp(),2)} m3/d**')
+		st.success(f'**RECYCLE FLOW: {round(self.qr(),2)} m3/d**')
+		st.success(f'**TOTAL SLUDGE: {round(self.pxss(),2)} kg/d **')
+
+		st.markdown("### ----------------------------------------------------------------")
 
